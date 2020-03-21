@@ -50,16 +50,26 @@ class DecompiledTextConsistencyTest : LightCodeInsightFixtureTestCase() {
                 project, listOf(), BindingTraceContext(), KotlinTestUtils.newConfiguration(), ::IDEPackagePartProvider
             ).moduleDescriptor
 
-            val projectBasedText = buildDecompiledTextForClassFile(classFile, ResolverForDecompilerImpl(module)).text
-            val deserializedText = buildDecompiledTextForClassFile(classFile).text
-            Assert.assertEquals(projectBasedText, deserializedText)
+            try {
+                val projectBasedText = buildDecompiledTextForClassFile(classFile, ResolverForDecompilerImpl(module)).text
+                val deserializedText = buildDecompiledTextForClassFile(classFile).text
+                Assert.assertEquals(projectBasedText, deserializedText)
 
-            // sanity checks
-            if (topLevelMembers != null) {
-                Assert.assertTrue(topLevelMembers in projectBasedText)
+                // sanity checks
+                if (topLevelMembers != null) {
+                    Assert.assertTrue(topLevelMembers in projectBasedText)
+                }
+
+                Assert.assertFalse("ERROR" in projectBasedText)
+            } finally {
+                LOG.warn("XXX: " + classId.asString())
+                LOG.warn("XXX: " + project.name)
+                LOG.warn("XXX: " + classFile.getSourceRoot(project))
+                LOG.warn("XXX: " + classFile.path)
+                LOG.warn("XXX: " + classFile.url)
+                LOG.warn("XXX: " + classFile.canonicalPath)
+                LOG.warn("XXX: $module")
             }
-
-            Assert.assertFalse("ERROR" in projectBasedText)
         }
     }
 
